@@ -141,7 +141,7 @@ server.listen(program.port, function () {
 
 	console.log('Listening on port %s...', program.port);
 
-});
+}, { resource: process.cwd() } );
 
 
 
