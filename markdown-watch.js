@@ -64,11 +64,6 @@ function isFileMarkdown( relativePath ) {
 
 
 var server = http.createServer(function (req, res) {
-
-	//var supportedExtensions = [ 'png', 'jpg', 'gif', 'jpeg' ],
-	//	requestExtension = path.extname( req.url ).length > 1 && path.extname( req.url ).substr( 1 ).toLowerCase(),
-	//	// Note if requestExtension is not present (false) it will still return -1.
-	//	isMarkdown = supportedExtensions.indexOf( requestExtension ) === -1;
 	var isMarkdown = isFileMarkdown( req.url );
 
 	var filepath = path.join(process.cwd(), req.url),
@@ -77,8 +72,6 @@ var server = http.createServer(function (req, res) {
 	if ( isMarkdown ) {
 		filepath += '.md';
 	}
-
-	console.log( 'req for ', filepath, path.extname(req.url), isMarkdown );
 
 	if ( fs.existsSync(filepath) ) {
 		var fileContent = fs.readFileSync(filepath, {encoding: 'utf8'});
@@ -89,16 +82,11 @@ var server = http.createServer(function (req, res) {
 			data.body = new Handlebars.SafeString( marked( fileContent ) );
 		} else {
 			res.setHeader('Content-Type', 'image/png');
-			//data.body = fileContent;
 			data.body = fs.readFileSync(filepath);
 		}
 	}
 	else res.statusCode = 404;  // Not Found (404)
 
-	//res.end( HTMLtemplate(data) );
-	//res.setHeader('Content-Type', 'text/html');
-	//res.end( isMarkdown ? HTMLtemplate( data ) : data );
-	console.log( typeof fileContent );
 	res.end( isMarkdown ? HTMLtemplate( data ) : data.body );
 });
 
@@ -140,7 +128,6 @@ socketIO.on('connection', function (socket) {
 	socket.on('watch', function (filepath) {
 
 		if ( !isFileMarkdown( filepath ) ) {
-			console.log( filepath, 'is not a markdown, returning' );
 			return false;
 		}
 
